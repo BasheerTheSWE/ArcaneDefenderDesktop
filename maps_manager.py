@@ -7,6 +7,7 @@
 import os
 from enum import Enum
 from objects.enums.map_type import MapType
+from objects.active_map import ActiveMap
 
 class MapsManager:
     """
@@ -36,7 +37,8 @@ class MapsManager:
 
         return [[int(tile) for tile in row.split(",")] for row in file_content]
 
-    def get_active_map(tile_map: list[list[int]], center_point: tuple[float, float], screen_size: tuple[float, float]) -> list[list[int]]:
+    @staticmethod
+    def get_active_map(tile_map: list[list[int]], center_point: tuple[float, float], screen_size: tuple[float, float]) -> ActiveMap:
         """
         This method will get you the active/visible tiles on the provided screen size relative to a specific center point (player).
 
@@ -52,7 +54,7 @@ class MapsManager:
 
         Returns:
         --------
-        list[list[int]] containting the IDs of the visible tiles.
+        ActiveMap object which contains the visible tile_map, starting column index, and starting row index.
         """
 
         columns_count = len(tile_map[0])
@@ -62,16 +64,16 @@ class MapsManager:
         # Visible tiles can be divided into rows and columns.
         # The `+4` is added just to be secure and avoid possible gaps at the edges.
         # The visible tiles count will always be `4` more than what's needed.
-        visible_columns_count = screen_size[0] // 32 + 4
-        visible_rows_count = screen_size[1] // 32 + 4
+        visible_columns_count = screen_size[0] // 32 + 8
+        visible_rows_count = screen_size[1] // 32 + 8
 
         center_point_column_id = center_point[0] // 32
         center_point_row_id = center_point[1] // 32
 
         # Calculating the id of the first and last columns in the visible map relative to the actual map.
         # For example the 100th column on the actual map could be the first visible column from the left side of the screen.
-        starting_column_index = center_point_column_id - (visible_columns_count / 2)
-        ending_column_index = center_point_column_id + (visible_columns_count / 2)
+        starting_column_index = center_point_column_id - (visible_columns_count // 2)
+        ending_column_index = center_point_column_id + (visible_columns_count // 2)
 
         # Setting bounds for the columns and making sure the visible columns aren't starting before 0 or ending after the actual columns count.
         # Making sure the id of the first column isn't a negative number, otherwise the code will break.
@@ -82,8 +84,8 @@ class MapsManager:
             ending_column_index = columns_count - 1602
 
         # Calculating the id of the first and last rows in the visible map relative to the actual map.
-        starting_row_index = center_point_row_id - (visible_rows_count / 2)
-        ending_row_index = center_point_row_id + (visible_rows_count / 2)
+        starting_row_index = center_point_row_id - (visible_rows_count // 2)
+        ending_row_index = center_point_row_id + (visible_rows_count // 2)
 
         # Setting the bounds for our rows to avoid getting a fatal error.
         if starting_row_index < 0:
@@ -92,4 +94,7 @@ class MapsManager:
         if ending_row_index > rows_count - 1:
             ending_row_index = rows_count - 1
 
-        return [row[starting_column_index:ending_column_index] for row in  tile_map[starting_row_index:ending_row_index]]
+        # Getting the visible map from slicing the visible tiles out of the actual map.
+        active_tiles = [row[starting_column_index:ending_column_index] for row in tile_map[starting_row_index:ending_row_index]]
+        
+        return ActiveMap(active_tiles, starting_row_index, starting_column_index)

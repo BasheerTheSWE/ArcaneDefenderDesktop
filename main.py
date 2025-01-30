@@ -1,3 +1,9 @@
+#
+# Created by Basheer Abdulmalik
+#
+# Mon, 27-Jan-25
+#
+
 import pygame
 from maps_manager import MapsManager
 from objects.enums.map_type import MapType
@@ -76,11 +82,21 @@ class ArcaneDefender:
             self.window.blit(self.player_surface, (0, 0))
             self.player_surface.fill((255, 255, 255, 0))
 
-            # Drawing the tile map:
-            for row_id, row in enumerate(self.tile_map):
+            active_map = MapsManager.get_active_map(self.tile_map, 
+                                                    self.player.rect.center, 
+                                                    (self.screen_size["width"], self.screen_size["height"]))
+
+            for row_id, row in enumerate(active_map.tiles):
                 for tile_id, tile in enumerate(row):
                     if tile > -1:
-                        pygame.draw.rect(self.background_surface, (255, 0, 255), pygame.Rect(tile_id * 32 - self.camera["x"], row_id * 32 - self.camera["y"], 32, 32))
+                        # Since we're looping through the active map, we have to account for its starting point relative to the actual map.
+                        # That's why we're adding the starting IDs x the tile size the x/y positions.
+                        tile_x_position = active_map.starting_column_index * 32 + tile_id * 32 - self.camera["x"]
+                        tile_y_position = active_map.starting_row_index * 32 + row_id * 32 - self.camera["y"]
+
+                        pygame.draw.rect(self.background_surface, 
+                                         (255, 0, 255), 
+                                         pygame.Rect(tile_x_position, tile_y_position, 32, 32))
 
             self.player.update()
             self._handle_camera_movement()
