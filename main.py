@@ -9,17 +9,17 @@ class ArcaneDefender:
 
     run: bool = True
     fps: float = 60 
+    camera: dict[str: float]  = {"x": 0, "y": 0}
 
-    screen_size: tuple[int, int]
+    screen_size: dict[str: float] = {"width": 500, "height": 500}
     window: pygame.Surface
+    player_surface: pygame.Surface
+    background_surface: pygame.Surface
     player: Player
     tile_map: list[list[int]]
     
     def __init__(self):
-        self.screen_size = (500, 500)
         self.tile_map = MapsManager.load_map(MapType.test)
-
-        print(self.tile_map)
 
         # Setting the game window and window components
         self._set_window()
@@ -31,11 +31,18 @@ class ArcaneDefender:
         """
 
         pygame.display.set_caption("Arcane Defender")
-        self.window = pygame.display.set_mode(self.screen_size)
+        self.window = pygame.display.set_mode((self.screen_size["width"], self.screen_size["height"]))
+
+        self.player_surface = pygame.Surface(self.window.get_size(), pygame.SRCALPHA)
+        self.background_surface = pygame.Surface(self.window.get_size(), pygame.SRCALPHA)
 
     def _set_player(self):
-        self.player = Player(self.window, 100, 100)
+        self.player = Player(self.window, 100, 100, camera=self.camera)
         pass
+
+    def _handle_camera_movement(self):
+        self.camera["x"] = self.player.rect.x - self.screen_size["width"] / 2
+        self.camera["y"] = self.player.rect.y - self.screen_size["height"] / 2
 
     def activate(self):
         """
@@ -54,14 +61,17 @@ class ArcaneDefender:
                     break
 
             self.window.fill((255, 255, 255))
+            self.window.blit(self.background_surface, (0, 0))
+            self.background_surface.fill((255, 255, 255))
 
             # Drawing the tile map:
             for row_id, row in enumerate(self.tile_map):
                 for tile_id, tile in enumerate(row):
                     if tile > -1:
-                        pygame.draw.rect(self.window, (255, 0, 255), pygame.Rect(tile_id * 32, row_id * 32, 32, 32))
+                        pygame.draw.rect(self.background_surface, (255, 0, 255), pygame.Rect(tile_id * 32 - self.camera["x"], row_id * 32 - self.camera["y"], 32, 32))
 
             self.player.update()
+            self._handle_camera_movement()
             pygame.display.update()
 
         pygame.quit()
