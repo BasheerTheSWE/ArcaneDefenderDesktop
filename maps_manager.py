@@ -93,6 +93,3 @@ class MapsManager:
             ending_row_index = rows_count - 1
 
         return [row[starting_column_index:ending_column_index] for row in  tile_map[starting_row_index:ending_row_index]]
-
-
-print(MapsManager.get_active_map([], (0, 0), (3200, 1602)))

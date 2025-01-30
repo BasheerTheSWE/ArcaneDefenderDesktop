@@ -1,4 +1,6 @@
 import pygame
+from maps_manager import MapsManager
+from objects.enums.map_type import MapType
 from player import Player
 
 pygame.init()
@@ -11,9 +13,13 @@ class ArcaneDefender:
     screen_size: tuple[int, int]
     window: pygame.Surface
     player: Player
+    tile_map: list[list[int]]
     
     def __init__(self):
         self.screen_size = (500, 500)
+        self.tile_map = MapsManager.load_map(MapType.test)
+
+        print(self.tile_map)
 
         # Setting the game window and window components
         self._set_window()
@@ -48,6 +54,13 @@ class ArcaneDefender:
                     break
 
             self.window.fill((255, 255, 255))
+
+            # Drawing the tile map:
+            for row_id, row in enumerate(self.tile_map):
+                for tile_id, tile in enumerate(row):
+                    if tile > -1:
+                        pygame.draw.rect(self.window, (255, 0, 255), pygame.Rect(tile_id * 32, row_id * 32, 32, 32))
+
             self.player.update()
             pygame.display.update()
 

@@ -21,6 +21,7 @@ class Player:
         # Resetting the movement to zero
         # When the user releases the arrow button the x-movement will be zero and the player would stop
         self.movement["x"] = 0
+        self.movement["y"] = 0
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_LEFT]:
