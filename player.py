@@ -43,5 +43,11 @@ class Player:
 
         self.rect.x += self.movement["x"]
         self.rect.y += self.movement["y"]
-        pygame.draw.rect(self.window, (0, 255, 0), pygame.Rect(self.rect.x - self.camera["x"], self.rect.y - self.camera["y"], self.rect.width, self.rect.height))
-        print(self.camera)
+
+        x_position = self.rect.x - self.camera["x"]
+        y_position = self.rect.y - self.camera["y"]
+
+        pygame.draw.rect(self.window, (0, 255, 0), pygame.Rect(x_position, 
+                                                               y_position, 
+                                                               self.rect.width, 
+                                                               self.rect.height))

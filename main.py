@@ -38,11 +38,21 @@ class ArcaneDefender:
 
     def _set_player(self):
         self.player = Player(self.window, 100, 100, camera=self.camera)
-        pass
 
     def _handle_camera_movement(self):
-        self.camera["x"] = self.player.rect.x - self.screen_size["width"] / 2
-        self.camera["y"] = self.player.rect.y - self.screen_size["height"] / 2
+        """
+        Camera or offset, is responsible of making the player to always be on the middle of the screen while the map behind moves in the corresponding movement direction.
+
+        * This method takes care of the camera movement.
+        * The resulting camera movement will be smooth and not rigid.
+        """
+
+        # To achieve a smooth camera movment, the camera's location won't jump immediately to where it suppose to be.
+        # location_to_be = (self.player.rect.x - self.screen_size["width"]) / 2
+        # Instead the distance to jump will be calculated and the camera's location will move forward by a fraction of that distance on each frame.
+        # This will give the movement an elastic effect, because the distance to jump will decrease on every frame until zero.
+        self.camera["x"] += ((self.player.rect.center[0] - self.screen_size["width"] / 2) - self.camera["x"]) // 15
+        self.camera["y"] += ((self.player.rect.center[1] - self.screen_size["height"] / 2) - self.camera["y"]) // 15
 
     def activate(self):
         """
@@ -63,6 +73,8 @@ class ArcaneDefender:
             self.window.fill((255, 255, 255))
             self.window.blit(self.background_surface, (0, 0))
             self.background_surface.fill((255, 255, 255))
+            self.window.blit(self.player_surface, (0, 0))
+            self.player_surface.fill((255, 255, 255, 0))
 
             # Drawing the tile map:
             for row_id, row in enumerate(self.tile_map):
@@ -72,6 +84,16 @@ class ArcaneDefender:
 
             self.player.update()
             self._handle_camera_movement()
+
+            pygame.draw.line(self.player_surface, 
+                             (230, 230, 230), 
+                             (self.screen_size["width"] / 2, 0), 
+                             (self.screen_size["width"] / 2, self.screen_size["height"]))
+            pygame.draw.line(self.player_surface, 
+                             (230, 230, 230), 
+                             (0, self.screen_size["height"] / 2), 
+                             (self.screen_size["width"], self.screen_size["height"] / 2))
+
             pygame.display.update()
 
         pygame.quit()
