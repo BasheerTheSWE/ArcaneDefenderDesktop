@@ -82,6 +82,7 @@ class ArcaneDefender:
             self.window.blit(self.player_surface, (0, 0))
             self.player_surface.fill((255, 255, 255, 0))
 
+            visible_tiles_rects = [] # this list will hold the rects of the visible tiles that would be passed to the player for collision detection.
             active_map = MapsManager.get_active_map(self.tile_map, 
                                                     self.player.rect.center, 
                                                     (self.screen_size["width"], self.screen_size["height"]))
@@ -93,12 +94,14 @@ class ArcaneDefender:
                         # That's why we're adding the starting IDs x the tile size the x/y positions.
                         tile_x_position = active_map.starting_column_index * 32 + tile_id * 32 - self.camera["x"]
                         tile_y_position = active_map.starting_row_index * 32 + row_id * 32 - self.camera["y"]
+                        tile_rect = pygame.Rect(tile_x_position, tile_y_position, 32, 32)
+                        visible_tiles_rects.append(tile_rect)
 
                         pygame.draw.rect(self.background_surface, 
                                          (255, 0, 255), 
-                                         pygame.Rect(tile_x_position, tile_y_position, 32, 32))
+                                         tile_rect)
 
-            self.player.update()
+            self.player.update(visible_tiles_rects)
             self._handle_camera_movement()
 
             pygame.draw.line(self.player_surface, 

@@ -44,7 +44,7 @@ class Player:
         if keys[pygame.K_DOWN]:
             self.movement["y"] = self.speed
 
-    def update(self):
+    def update(self, tiles_rects: list[pygame.Rect]):
         self._set_controls()
 
         self.rect.x += self.movement["x"]
