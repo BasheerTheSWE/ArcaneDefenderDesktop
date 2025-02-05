@@ -43,7 +43,7 @@ class Player:
         if keys[pygame.K_DOWN]:
             self.movement["y"] = self.speed
 
-    def update(self, tiles_rects: list[pygame.Rect]):
+    def update(self, tiles_rects: list[pygame.Rect], camera: dict[str: float]):
         self._set_controls()
 
         self.rect.x += self.movement["x"]
@@ -68,7 +68,7 @@ class Player:
                 # The player is moving up
                 self.rect.top = rect.bottom
 
-        pygame.draw.rect(self.window, (0, 255, 0), pygame.Rect(self.rect.x, 
-                                                               self.rect.y, 
+        pygame.draw.rect(self.window, (0, 255, 0), pygame.Rect(self.rect.x - camera["x"], 
+                                                               self.rect.y - camera["y"], 
                                                                self.rect.width, 
                                                                self.rect.height))
