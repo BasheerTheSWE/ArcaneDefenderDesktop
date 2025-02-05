@@ -57,8 +57,8 @@ class ArcaneDefender:
         # location_to_be = (self.player.rect.x - self.screen_size["width"]) / 2
         # Instead the distance to jump will be calculated and the camera's location will move forward by a fraction of that distance on each frame.
         # This will give the movement an elastic effect, because the distance to jump will decrease on every frame until zero.
-        self.camera["x"] += ((self.player.rect.center[0] - self.screen_size["width"] / 2) - self.camera["x"]) / 15
-        self.camera["y"] += ((self.player.rect.center[1] - self.screen_size["height"] / 2) - self.camera["y"]) / 15
+        self.camera["x"] += ((self.player.rect.center[0] - self.screen_size["width"] / 2) - self.camera["x"]) / 10
+        self.camera["y"] += ((self.player.rect.center[1] - self.screen_size["height"] / 2) - self.camera["y"]) / 10
 
     def activate(self):
         """
