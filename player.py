@@ -5,21 +5,20 @@
 #
 
 import pygame
+from maps_manager import MapsManager
 pygame.init()
 
 class Player:
 
     rect: pygame.Rect
-    camera: dict[str: float]
     movement: dict[str: float] = {"x": 0, "y": 0}
     speed: float = 5
     size: (float, float) = (32, 64)
     window: pygame.Surface
 
-    def __init__(self, window: pygame.Surface, x: float, y: float, camera: dict[str: float]):
+    def __init__(self, window: pygame.Surface, x: float, y: float):
         self.window = window
         self.rect = pygame.Rect(x, y, self.size[0], self.size[1])
-        self.camera = camera
 
     def _set_controls(self):
         """
@@ -48,12 +47,28 @@ class Player:
         self._set_controls()
 
         self.rect.x += self.movement["x"]
+
+        for rect in MapsManager.get_hitlist(player_rect=self.rect, tiles_rects=tiles_rects):
+            if self.movement["x"] > 0:
+                # The player is moving right
+                self.rect.right = rect.left
+
+            if self.movement["x"] < 0:
+                # The player is moving up
+                self.rect.left = rect.right
+
         self.rect.y += self.movement["y"]
 
-        x_position = self.rect.x - self.camera["x"]
-        y_position = self.rect.y - self.camera["y"]
+        for rect in MapsManager.get_hitlist(player_rect=self.rect, tiles_rects=tiles_rects):
+            if self.movement["y"] > 0:
+                # The player is moving down
+                self.rect.bottom = rect.top
 
-        pygame.draw.rect(self.window, (0, 255, 0), pygame.Rect(x_position, 
-                                                               y_position, 
+            if self.movement["y"] < 0:
+                # The player is moving up
+                self.rect.top = rect.bottom
+
+        pygame.draw.rect(self.window, (0, 255, 0), pygame.Rect(self.rect.x, 
+                                                               self.rect.y, 
                                                                self.rect.width, 
                                                                self.rect.height))

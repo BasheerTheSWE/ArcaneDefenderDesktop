@@ -5,6 +5,7 @@
 #
 
 import os
+import pygame
 from enum import Enum
 from objects.enums.map_type import MapType
 from objects.active_map import ActiveMap
@@ -98,3 +99,7 @@ class MapsManager:
         active_tiles = [row[starting_column_index:ending_column_index] for row in tile_map[starting_row_index:ending_row_index]]
         
         return ActiveMap(active_tiles, starting_row_index, starting_column_index)
+
+    @staticmethod
+    def get_hitlist(player_rect: pygame.Rect, tiles_rects: [pygame.Rect]) -> list[pygame.Rect]:
+        return [rect for rect in tiles_rects if player_rect.colliderect(rect)]

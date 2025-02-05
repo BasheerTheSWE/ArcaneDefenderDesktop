@@ -15,7 +15,6 @@ class ArcaneDefender:
 
     run: bool = True
     fps: float = 60 
-    camera: dict[str: float]  = {"x": 0, "y": 0}
 
     screen_size: dict[str: float] = {"width": 500, "height": 500}
     window: pygame.Surface
@@ -43,22 +42,22 @@ class ArcaneDefender:
         self.background_surface = pygame.Surface(self.window.get_size(), pygame.SRCALPHA)
 
     def _set_player(self):
-        self.player = Player(self.window, 100, 100, camera=self.camera)
+        self.player = Player(self.window, 300, 300)
 
-    def _handle_camera_movement(self):
-        """
-        Camera or offset, is responsible of making the player to always be on the middle of the screen while the map behind moves in the corresponding movement direction.
+    # def _handle_camera_movement(self):
+    #     """
+    #     Camera or offset, is responsible of making the player to always be on the middle of the screen while the map behind moves in the corresponding movement direction.
 
-        * This method takes care of the camera movement.
-        * The resulting camera movement will be smooth and not rigid.
-        """
+    #     * This method takes care of the camera movement.
+    #     * The resulting camera movement will be smooth and not rigid.
+    #     """
 
-        # To achieve a smooth camera movment, the camera's location won't jump immediately to where it suppose to be.
-        # location_to_be = (self.player.rect.x - self.screen_size["width"]) / 2
-        # Instead the distance to jump will be calculated and the camera's location will move forward by a fraction of that distance on each frame.
-        # This will give the movement an elastic effect, because the distance to jump will decrease on every frame until zero.
-        self.camera["x"] += ((self.player.rect.center[0] - self.screen_size["width"] / 2) - self.camera["x"]) // 15
-        self.camera["y"] += ((self.player.rect.center[1] - self.screen_size["height"] / 2) - self.camera["y"]) // 15
+    #     # To achieve a smooth camera movment, the camera's location won't jump immediately to where it suppose to be.
+    #     # location_to_be = (self.player.rect.x - self.screen_size["width"]) / 2
+    #     # Instead the distance to jump will be calculated and the camera's location will move forward by a fraction of that distance on each frame.
+    #     # This will give the movement an elastic effect, because the distance to jump will decrease on every frame until zero.
+    #     self.camera["x"] += ((self.player.rect.center[0] - self.screen_size["width"] / 2) - self.camera["x"]) // 15
+    #     self.camera["y"] += ((self.player.rect.center[1] - self.screen_size["height"] / 2) - self.camera["y"]) // 15
 
     def activate(self):
         """
@@ -92,18 +91,16 @@ class ArcaneDefender:
                     if tile > -1:
                         # Since we're looping through the active map, we have to account for its starting point relative to the actual map.
                         # That's why we're adding the starting IDs x the tile size the x/y positions.
-                        tile_x_position = active_map.starting_column_index * 32 + tile_id * 32 - self.camera["x"]
-                        tile_y_position = active_map.starting_row_index * 32 + row_id * 32 - self.camera["y"]
+                        tile_x_position = active_map.starting_column_index * 32 + tile_id * 32
+                        tile_y_position = active_map.starting_row_index * 32 + row_id * 32
                         tile_rect = pygame.Rect(tile_x_position, tile_y_position, 32, 32)
                         visible_tiles_rects.append(tile_rect)
 
                         pygame.draw.rect(self.background_surface, 
                                          (255, 0, 255), 
-                                         tile_rect)
+                                         pygame.Rect(tile_x_position, tile_y_position, tile_rect.w, tile_rect.h))
 
             self.player.update(visible_tiles_rects)
-            self._handle_camera_movement()
-
             pygame.draw.line(self.player_surface, 
                              (230, 230, 230), 
                              (self.screen_size["width"] / 2, 0), 
