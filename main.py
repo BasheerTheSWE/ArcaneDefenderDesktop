@@ -76,6 +76,10 @@ class ArcaneDefender:
                     self.run = False
                     break
 
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        self.player.jump()
+
             self.window.fill((255, 255, 255))
             self.window.blit(self.background_surface, (0, 0))
             self.background_surface.fill((255, 255, 255))
